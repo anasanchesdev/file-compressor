@@ -5,6 +5,7 @@ FONT = ('Segoe UI Black', 10)
 ACTION_FONT = ('Segoe UI', 10)
 
 ps.theme('Dark')
+
 title = ps.Text('FILE COMPRESSOR', font=('Copperplate Gothic Bold', 20), text_color='green')
 dev_credits = ps.Text('by: anasanchesdev', font=('Courier', 8), text_color='lime green', pad=((6, 0), (0, 15)))
 z_file_label = ps.Text('Select files: ', font=FONT)
@@ -12,7 +13,7 @@ z_folder_label = ps.Text('Select destination folder: ', font=FONT, pad=((2, 0), 
 z_name_label = ps.Text('Type in the zip file name: ', font=FONT, pad=((5, 0), (40, 0)))
 zip_slider = ps.Text('ZIP')
 unzip_slider = ps.Text('UNZIP')
-slider = ps.Slider(key='slider', range=(0, 1), disable_number_display=True, enable_events=True, orientation='h',
+slider = ps.Slider(range=(0, 1), disable_number_display=True, enable_events=True, orientation='h',
                    size=(5, 5))
 action_text = ps.Text('', key='action_text', font=ACTION_FONT)
 
@@ -24,7 +25,7 @@ z_file_button = ps.FilesBrowse('Choose', key='files_button')
 z_folder_button = ps.FolderBrowse('Choose', key='folder_button')
 z_action_button = ps.Button('Compress', key='compress_button')
 
-uz_file_label = ps.Text('Select files to compress: ', font=FONT)
+uz_file_label = ps.Text('Select files:', font=FONT)
 uz_folder_label = ps.Text('Select destination folder: ', font=FONT, pad=((2, 0), (5, 0)))
 uz_action_text = ps.Text('', key='uz_action_text', font=ACTION_FONT)
 
@@ -42,7 +43,6 @@ zip_layout = [
     [z_folder_input, z_folder_button],
     [z_name_label],
     [z_name_input, z_action_button],
-    [action_text]
 ]
 
 unzip_layout = [
@@ -56,14 +56,14 @@ layout = [
     [title],
     [dev_credits],
     [zip_slider, slider, unzip_slider],
-    [ps.Column(zip_layout, key='zip')],
-    [ps.Column(unzip_layout, key='unzip', visible=False)]
+    [ps.Column(zip_layout, key='layout0'), ps.Column(unzip_layout, key='layout1', visible=False)],
+    [action_text]
 ]
 
 # ui format
 window = ps.Window('File compressor', layout=layout)
 
-
+layout = 0
 while True:
 
     event, values = window.read()  # event: pressed button // values (dict): respective inputs of the keys
@@ -82,6 +82,11 @@ while True:
         zip_archive(filepath, folder, zip_name)
         window['action_text'].update(value=f'"{zip_name}.zip" was compressed successfully.', text_color='lime green',
                                      font=ACTION_FONT)
+
+    elif event in [0, 1]:
+        window[f'layout{layout}'].update(visible=False)
+        layout = int(values[event])
+        window[f'layout{layout}'].update(visible=True)
 
     elif event == ps.WIN_CLOSED:
         break
